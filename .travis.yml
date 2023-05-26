@@ -1,0 +1,29 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  # -t tag, -f file
+  - docker build -t zahidchandio/react-test -f ./client/Dockerfile.dev ./client
+
+# Test running section
+script:
+  # -- --coverage To stop test script. It enters watch mode by default; we use it to exit it from watch mode.
+  # -- --coverage it ensures that test script eventually exits with status code either 0 or not zero it test failed.
+  - docker run zahidchandio/react-test npm test -- --coverage
+
+after_success:
+  # Multiple containers
+  - docker build -t zahidchandio/multi-client ./client
+  - docker build -t zahidchandio/mutli-nginx ./nginx
+  - docker build -t zahidchandio/multi-server ./server
+  - docker build -t zahidchandio/multi-worker ./worker
+  # Log in to the docker CLI
+  # Add username and pass env inside your travis repo
+  # echo "$DOCKER_PASSWORD" is going to reteriew our docker password from env variables and emit that over stdin as input to the next command (command on the other side of the pipe |)
+  # --password-stdin this expects echoed password to be used
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push zahidchandio/multi-client
+  - docker push zahidchandio/mutli-nginx
+  - docker push zahidchandio/multi-server
+  - docker push zahidchandio/multi-worker
