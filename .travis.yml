@@ -4,8 +4,8 @@ services:
 
 before_install:
   # -t tag, -f file
-  # - docker build -t zahidchandio/react-test -f ./client/Dockerfile.dev ./client
-  - docker build -t zahidchandio/react-test ./client 
+  - docker build -t zahidchandio/react-test -f ./client/Dockerfile.dev ./client
+  # - docker build -t zahidchandio/react-test ./client 
 
 # Test running section
 script:
